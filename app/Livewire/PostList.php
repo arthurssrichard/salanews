@@ -8,6 +8,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\On;
 use App\Models\Post;
+use App\Models\Category;
 
 class PostList extends Component
 {
@@ -18,6 +19,8 @@ class PostList extends Component
     public $sort = 'desc';
     #[Url()]
     public $search = '';
+    #[Url()]
+    public $category = '';
 
     public function setSort($sort){
         $this->sort = ($sort === 'desc') ? 'desc' : 'asc';
@@ -30,7 +33,13 @@ class PostList extends Component
 
     #[Computed()]
     public function posts(){
-        return Post::published()->orderBy('published_at', $this->sort)->where('title','like',"%{$this->search}%")->paginate(3);
+        return Post::published()
+        ->orderBy('published_at', $this->sort)
+        ->when(Category::where('slug',$this->category)->first(), function($query){
+            $query->withCategory($this->category);
+        })
+        ->where('title','like',"%{$this->search}%")
+        ->paginate(3);
     }
 
     public function render()

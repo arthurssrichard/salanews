@@ -9,4 +9,14 @@ class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
+    protected $fillable = [
+        'title',
+        'slug',
+        'text-color',
+        'bg_color'
+    ];
+
+    public function posts(){
+        return $this->belongsToMany('App\Models\Post');
+    }
 }
